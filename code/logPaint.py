@@ -60,9 +60,9 @@ class DrawPanel(wx.ScrolledWindow):
                 dc = wx.BufferedDC(None, self.buffer)
                 dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
                 dc.Clear()
-                dc.SetPen(wx.Pen("BLACK", 1))
-                dc.DrawCircle(100, 100, 10)
-                dc.DrawCircle(2000, 100, 10)
+                #dc.SetPen(wx.Pen("BLACK", 1))
+                #dc.DrawCircle(100, 100, 10)
+                #dc.DrawCircle(2000, 100, 10)
 
         def OnPaint(self, event=None):
                 dc = wx.BufferedPaintDC(self, self.buffer,
