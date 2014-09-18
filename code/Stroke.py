@@ -67,21 +67,16 @@ class Stroke(object):
 
         data = []
         t = 0
+        nextIndex = 0
 
-        nmlX = float(rawData[0][1] - self.minX)/float(xSize)
-        nmlY = float(rawData[0][2] - self.minY)/float(ySize)
-        data.append((t, nmlX, nmlY))
-        prevIndex = 0
-        t += 1
-
-        while(prevIndex < self.nRawData - 1):
-            if(rawData[prevIndex + 1][0] > t):
+        while(nextIndex < self.nRawData):
+            if(rawData[nextIndex][0] > t):
                 nmlX = data[-1][1]
                 nmlY = data[-1][2]
             else:
-                nmlX = float(rawData[prevIndex + 1][1] - self.minX)/float(xSize)
-                nmlY = float(rawData[prevIndex + 1][2] - self.minY)/float(ySize)
-                prevIndex += 1
+                nmlX = float(rawData[nextIndex][1] - self.minX)/float(xSize)
+                nmlY = float(rawData[nextIndex][2] - self.minY)/float(ySize)
+                nextIndex += 1
 
             data.append((t, nmlX, nmlY))
             t += 1
