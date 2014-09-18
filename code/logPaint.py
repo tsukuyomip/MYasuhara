@@ -1,3 +1,5 @@
+#coding: utf-8
+
 import wx
 import time
 import cPickle as cpkl
@@ -18,6 +20,8 @@ class DrawPanel(wx.ScrolledWindow):
 
                 self.dragFlg = False
                 self.logData = None
+
+                self.saveCount = 0
 
         def OnMouseLeftDown(self, event):
                 # initialize canvas
@@ -73,9 +77,26 @@ class DrawPanel(wx.ScrolledWindow):
         def OnMouseRightDown(self, event):
                 # if drawn, dump logData
                 if self.logData != None:
-                        filename = "testLog.pkl"
-                        cpkl.dump(self.logData, open(filename, "wb"))
+                        prefixFilename = "testLog"
+                        self.saveCount += 1
+                        if(self.saveCount == 1):
+                                count = ""
+                        else:
+                                count = "_" + str(self.saveCount)
+
+                        filename = prefixFilename + count
+
+                        cpkl.dump(self.logData, open(filename + ".pkl", "wb"))
                         print "output logfile:", filename
+
+                        self.buffer.SaveFile(filename + ".png", wx.BITMAP_TYPE_PNG)
+
+                        box=wx.MessageDialog(None,
+                                             '保存しました',
+                                             filename + 'として保存しました．'
+                                             ,wx.OK)
+                        ans=box.ShowModal()
+
 
         def outputLog(self, str = ""):
                 print str
@@ -93,6 +114,7 @@ class DrawPanel(wx.ScrolledWindow):
         def OnPaint(self, event=None):
                 dc = wx.BufferedPaintDC(self, self.buffer,
                         wx.BUFFER_VIRTUAL_AREA)
+
 
 class TopFrame(wx.Frame):
         def __init__(self, parent, ID, name):
