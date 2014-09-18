@@ -20,7 +20,9 @@ class DrawPanel(wx.ScrolledWindow):
         def OnMouseLeftDown(self, event):
                 dc = wx.BufferedDC(None, self.buffer)
                 #dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
-                self.SetBackgroundColour("white")
+                #self.SetBackgroundColour("white")
+                dc.SetPen(wx.Pen("WHITE", 2))
+                dc.DrawRectangle(0, 0, 500, 500)
                 dc.Clear()
 
                 pos = event.GetPosition()
@@ -37,7 +39,9 @@ class DrawPanel(wx.ScrolledWindow):
                         pos = event.GetPosition()
                         nx = pos[0]
                         ny = pos[1]
-                        self.outputLog("%d\t%d\t%d" % (int(time.time()*1000) - self.startTime, nx, ny))
+                        t = int(time.time()*1000) - self.startTime
+                        t = int((t/10) + 1)
+                        self.outputLog("%d\t%d\t%d" % (t, nx, ny))
 
 
                         dc = wx.BufferedDC(None, self.buffer)
@@ -70,7 +74,7 @@ class DrawPanel(wx.ScrolledWindow):
 
 class TopFrame(wx.Frame):
         def __init__(self, parent, ID, name):
-                wx.Frame.__init__(self, parent, ID, name)
+                wx.Frame.__init__(self, parent, ID, name, size=(550,550))
 
 class MyApp(wx.App):
         def OnInit(self):
