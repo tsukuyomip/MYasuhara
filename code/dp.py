@@ -121,14 +121,28 @@ class DP(object):
 
         #self.way = way
 
-    def outputWay(self):
+    def outputWay(self, filename = "result.dat"):
+        fp = open(filename, "w")
+
         for i in range(len(self.way)):
             print "%d\t%d" % (self.way[i][0], self.way[i][1])
+            fp.write("%d\t%d" % (self.way[i][0], self.way[i][1]))
+            fp.write("\n")
 
         print ""
+        fp.write("\n")
+
         # 完全マッチ時の直線の描画
+
         print "0\t0"
+        fp.write("0\t0")
+        fp.write("\n")
+
         print "%d\t%d" % (self.way[0][0], self.way[0][1])
+        fp.write("%d\t%d" % (self.way[0][0], self.way[0][1]))
+        fp.write("\n")
+
+        fp.close()
 
     def outputError(self, errPoint, mes):
         print >> sys.stderr, "Error(%s): %s" % (str(errPoint), str(mes))
