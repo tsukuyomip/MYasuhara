@@ -2,6 +2,7 @@
 
 import Stroke
 import math
+import sys
 
 class DP(object):
     MOVE_UNDEF = -1
@@ -29,23 +30,29 @@ class DP(object):
         self.data1 = data1
         self.data2 = data2
 
-        # field[data1][data2] = [[(MOVE_DST, totCost) ...] ...]
-        self.field = [[(self.MOVE_UNDEF, -1)]*(data2.totTime + 1)]*(data1.totTime + 1)
-
         self.makeField(data1, data2)
 
     def makeField(self, data1, data2):
-        # (i, 0)を計算
+        # field[data1][data2] = [[(MOVE_DST, totCost) ...] ...]
+        self.field = []
         for i in range(data1.totTime + 1):
+            self.field.append([(self.MOVE_UNDEF, 0)]*(data2.totTime + 1))
+
+        # (0, 0)を計算
+        cost = self.computeDistance(data1.data[0], data2.data[0])
+        self.field[0][0] = (self.MOVE_UNDEF, cost)
+
+        # (i, 0)を計算
+        for i in range(1, data1.totTime + 1):
             cost = self.computeDistance(data1.data[i], data2.data[0])
             prevCost = self.field[i-1][0][1]
-            self.field[i][0] = (self.MOVE_UNDEF, prevCost + cost)
+            self.field[i][0] = (self.MOVE_R, prevCost + cost)
 
         # (0, j)を計算
-        for j in range(data2.totTime + 1):
+        for j in range(1, data2.totTime + 1):
             cost = self.computeDistance(data1.data[0], data2.data[j])
             prevCost = self.field[0][j-1][1]
-            self.field[0][j] = (self.MOVE_UNDEF, prevCost + cost)
+            self.field[0][j] = (self.MOVE_U, prevCost + cost)
 
         # (i, j)を計算
         for i in range(1, data1.totTime + 1):
@@ -53,55 +60,75 @@ class DP(object):
                 # 左を一番小さいとし，順に左下，下を調べる
                 min = self.field[i - 1][j][1]
                 direction = self.MOVE_R
-                if min > self.field[i - 1][j - 1][1]:
-                    min = self.field[i - 1][j - 1][1]
+
+                tmp = self.field[i - 1][j - 1][1]
+                if tmp < min:
+                    min = tmp
                     direction = self.MOVE_UR
-                if min > self.field[i][j - 1][1]:
-                    min = self.field[i][j - 1][1]
+
+                tmp = self.field[i][j - 1][1]
+                if tmp < min:
+                    min = tmp
                     direction = self.MOVE_U
 
                 cost = self.computeDistance(data1.data[i], data2.data[j])
 
                 self.field[i][j] = (direction, min + cost)
+                if(i == 0):
+                    print "warning!!!!"
 
     def computeDistance(self, elem1, elem2):
         """
         elem1, elem2 は共に Stroke.data
         elem1 と elem2 のユークリッド距離を返す
         """
-        distX = elem1[1] - elem2[1]
-        distY = elem1[2] - elem2[2]
+        distX = float(elem1[1]) - float(elem2[1])
+        distY = float(elem1[2]) - float(elem2[2])
 
         return math.sqrt(distX*distX + distY*distY)
 
     def computeSolution(self):
-        way = []
+        self.way = []
         # 右上からスタート
-        pos = [self.data1.totTime, self.data2.totTime]
-        way.append((pos[0], pos[1]))
+        xPos = self.data1.totTime
+        yPos = self.data2.totTime
+        self.way.append((xPos, yPos))
 
-        while(pos[0] > 0 or pos[0] > 0):
-            if(pos[0] < 0):
-                self.outputError("DP.computeSolution", "pos[0] < 0")
-            if(pos[1] < 0):
-                self.outputError("DP.computeSolution", "pos[1] < 0")
+        while(xPos >= 0 and yPos >= 0):
+            if (xPos == 0 and yPos == 0):
+                break
+            if(xPos < 0):
+                self.outputError("DP.computeSolution", "xPos(%d) < 0" % xPos)
+            if(yPos < 0):
+                self.outputError("DP.computeSolution", "yPos(%d) < 0" % yPos)
 
             dx = 0
             dy = 0
-            if   (self.field[pos[0]][pos[1]][0] == self.MOVE_R):
+            if   (self.field[xPos][yPos][0] == self.MOVE_R):
                 dx = -1
-            elif (self.field[pos[0]][pos[1]][0] == self.MOVE_U):
+            elif (self.field[xPos][yPos][0] == self.MOVE_U):
                 dy = -1
-            elif (self.field[pos[0]][pos[1]][0] == self.MOVE_UR):
+            elif (self.field[xPos][yPos][0] == self.MOVE_UR):
                 dx = -1
                 dy = -1
+            else:
+                self.outputError("DP.computeSolution", "(%d, %d) MOVE_UNDEF?" % (xPos, yPos))
 
-            pos[0] += dx
-            pos[1] += dy
+            xPos += dx
+            yPos += dy
 
-            way.append((pos[0], pos[1]))
+            self.way.append((xPos, yPos))
 
-        self.way = way
+        #self.way = way
+
+    def outputWay(self):
+        for i in range(len(self.way)):
+            print "%d\t%d" % (self.way[i][0], self.way[i][1])
+
+        print ""
+        # 完全マッチ時の直線の描画
+        print "0\t0"
+        print "%d\t%d" % (self.way[0][0], self.way[0][1])
 
     def outputError(self, errPoint, mes):
         print >> sys.stderr, "Error(%s): %s" % (str(errPoint), str(mes))
