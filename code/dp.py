@@ -38,18 +38,18 @@ class DP(object):
         # (i, 0)を計算
         for i in range(data1.totTime + 1):
             cost = self.computeDistance(data1.data[i], data2.data[0])
-            self.field[i][0] = (self.MOVE_UNDEF, cost)
+            prevCost = self.field[i-1][0][1]
+            self.field[i][0] = (self.MOVE_UNDEF, prevCost + cost)
 
         # (0, j)を計算
         for j in range(data2.totTime + 1):
             cost = self.computeDistance(data1.data[0], data2.data[j])
-            self.field[0][j] = (self.MOVE_UNDEF, cost)
+            prevCost = self.field[0][j-1][1]
+            self.field[0][j] = (self.MOVE_UNDEF, prevCost + cost)
 
         # (i, j)を計算
         for i in range(1, data1.totTime + 1):
             for j in range(1, data2.totTime + 1):
-                cost = self.computeDistance(data1.data[i], data2.data[j])
-
                 # 左を一番小さいとし，順に左下，下を調べる
                 min = self.field[i - 1][j][1]
                 direction = self.MOVE_R
@@ -59,6 +59,9 @@ class DP(object):
                 if min > self.field[i][j - 1][1]:
                     min = self.field[i][j - 1][1]
                     direction = self.MOVE_U
+
+                cost = self.computeDistance(data1.data[i], data2.data[j])
+
                 self.field[i][j] = (direction, min + cost)
 
     def computeDistance(self, elem1, elem2):
@@ -87,10 +90,10 @@ class DP(object):
             dy = 0
             if   (self.field[pos[0]][pos[1]][0] == self.MOVE_R):
                 dx = -1
+            elif (self.field[pos[0]][pos[1]][0] == self.MOVE_U):
+                dy = -1
             elif (self.field[pos[0]][pos[1]][0] == self.MOVE_UR):
                 dx = -1
-                dy = -1
-            elif (self.field[pos[0]][pos[1]][0] == self.MOVE_U):
                 dy = -1
 
             pos[0] += dx
