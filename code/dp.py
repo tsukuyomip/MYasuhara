@@ -121,6 +121,11 @@ class DP(object):
 
         #self.way = way
 
+        # DP結果と距離の計算・出力
+        self.computeWayDistance()
+        #print self.wayDist
+
+
     def outputWay(self, filename = "result.dat"):
         fp = open(filename, "w")
 
@@ -138,11 +143,20 @@ class DP(object):
         fp.write("0\t0")
         fp.write("\n")
 
-        print "%d\t%d" % (self.way[0][0], self.way[0][1])
-        fp.write("%d\t%d" % (self.way[0][0], self.way[0][1]))
+        print "%d\t%d" % (self.data1.totTime, self.data2.totTime)
+        fp.write("%d\t%d" % (self.data1.totTime, self.data2.totTime))
         fp.write("\n")
 
         fp.close()
+
+
+    def computeWayDistance(self):
+        dist = 0.0
+        a = float(self.data2.totTime)/float(self.data1.totTime)
+        for p in self.way:
+            dist += math.sqrt((p[1] - a*p[0])*(p[1] - a*p[0]))
+        self.wayDist = dist / float(len(self.way))
+
 
     def outputError(self, errPoint, mes):
         print >> sys.stderr, "Error(%s): %s" % (str(errPoint), str(mes))
