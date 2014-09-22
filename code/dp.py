@@ -57,11 +57,11 @@ class DP(object):
         # (i, j)を計算
         for i in range(1, data1.totTime + 1):
             for j in range(1, data2.totTime + 1):
-                # 左を一番小さいとし，順に左下，下を調べる
-                min = self.field[i - 1][j][1]
-                direction = self.MOVE_R
+                # 左下を一番小さいとし，順に左，下を調べる
+                min = self.field[i - 1][j - 1][1]
+                direction = self.MOVE_UR
 
-                tmp = self.field[i - 1][j - 1][1]
+                tmp = self.field[i - 1][j][1]
                 if tmp < min:
                     min = tmp
                     direction = self.MOVE_UR

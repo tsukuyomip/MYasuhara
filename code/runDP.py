@@ -6,10 +6,23 @@ if __name__ == "__main__":
     import Stroke
     import cPickle
 
-    # 読み込み・保存ファイル名に関する定義
-    directory = "result/"
-    dataA = "ru1"
-    dataB = "na1"
+    argvs = sys.argv
+    if(len(argvs) == 1):
+        # 読み込み・保存ファイル名に関する定義
+        directory = "result/"
+        dataA = "ru1"
+        dataB = "ru1"
+    elif(len(argvs) == 4):
+        directory = argvs[1]
+        if directory[-1] != "/":
+            directory += "/"
+        dataA = argvs[2]
+        dataB = argvs[3]
+    else:
+        print >> sys.stderr, \
+            "usage:\n"+\
+            "\tpython %s [<DIR_NAME> <FILE1> <FILE2>]\n" % (argvs[0])
+        quit()
 
     # 時間＋座標データ読み込み
     log1 = cPickle.load(open(directory + dataA + ".pkl", "rb"))
