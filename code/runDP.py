@@ -1,5 +1,6 @@
 # coding: utf-8
 import sys
+from subprocess import PIPE, Popen
 
 if __name__ == "__main__":
     import dp
@@ -41,3 +42,9 @@ if __name__ == "__main__":
     mydp.outputWay(outputName)
     print>>sys.stderr, "wayDist:" + str(mydp.wayDist)
     print>>sys.stderr, "output:", outputName
+
+    plotquery = 'plot "%s" w l' % outputName
+    print>>sys.stderr, plotquery
+
+    plot = Popen(['gnuplot'], stdin=PIPE)
+    plot.communicate(plotquery)
